@@ -1,6 +1,6 @@
 # Agent Services Marketplace
 
-A mini app on Base and Farcaster where users can discover and pay for AI agent services using USDC or MONITOR tokens.
+A mini app on Base and Farcaster where users can discover and pay for AI agent services using USDC or MONITOR tokens..
 
 ## Features
 
