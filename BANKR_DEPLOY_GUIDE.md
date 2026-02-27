@@ -11,7 +11,7 @@
 
 ## Prerequisites
 
-✅ Bankr API key (you already have this: `clw_1fccc2975ca4cdcaad9319f0f74d5dd4`)
+✅ Bankr API key (you already have this: `bk_AHA5P8D5CQDRWQRM99HK8DXGHZWFUDM5`)
 ✅ GitHub account (for code storage)
 ✅ Vercel account (for hosting — free tier is fine)
 ✅ MONITOR token already deployed on Base
@@ -33,7 +33,7 @@ git remote add origin https://github.com/YOUR_USERNAME/agent-marketplace.git
 # Create .env.local file (for local testing)
 cp .env.example .env.local
 # Edit .env.local and add your Bankr API key:
-# BANKR_API_KEY=clw_1fccc2975ca4cdcaad9319f0f74d5dd4
+# BANKR_API_KEY=bk_AHA5P8D5CQDRWQRM99HK8DXGHZWFUDM5
 
 # Push to GitHub
 git branch -M main
@@ -67,7 +67,7 @@ vercel --prod
 3. Select your GitHub repo (`agent-marketplace`)
 4. Click "Import"
 5. Add environment variables:
-   - `BANKR_API_KEY` = `clw_1fccc2975ca4cdcaad9319f0f74d5dd4`
+   - `BANKR_API_KEY` = `bk_AHA5P8D5CQDRWQRM99HK8DXGHZWFUDM5`
 6. Click "Deploy"
 
 ## Step 3: Set Environment Variables on Vercel

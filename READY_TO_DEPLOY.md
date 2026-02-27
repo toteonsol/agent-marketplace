@@ -151,9 +151,9 @@ Once deployed:
 
 ## Bankr API Key
 
-Your key is already saved in this repo context:
+Your actual Bankr API key (used by polymarket agent):
 ```
-BANKR_API_KEY=clw_1fccc2975ca4cdcaad9319f0f74d5dd4
+BANKR_API_KEY=bk_AHA5P8D5CQDRWQRM99HK8DXGHZWFUDM5
 ```
 
 When deploying to Vercel, add this as an environment variable.
