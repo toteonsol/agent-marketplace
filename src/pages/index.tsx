@@ -1,298 +1,163 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import AgentCard from '@/components/AgentCard';
-import Dashboard from '@/components/Dashboard';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [agents, setAgents] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedAgent, setSelectedAgent] = useState(null);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-
-  useEffect(() => {
-    // Try to get user address from localStorage or prompt for it
-    const savedAddress = localStorage.getItem('userAddress');
-    if (savedAddress) {
-      setUserAddress(savedAddress);
-    }
-
-    fetchAgents();
-    fetchTransactions();
-    const interval = setInterval(() => {
-      fetchAgents();
-      fetchTransactions();
-    }, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchAgents = async () => {
-    try {
-      // In production, call contract via ethers/wagmi
-      const mockAgents = [
-        {
-          id: 0,
-          name: 'Polymarket Trader',
-          description: 'Autonomous prediction market trader with 15%+ edge detection',
-          creator: '0x7f52937fa30e4bc733e0b99a4f2843ba4f7ecf12',
-          usdcPrice: 100000000, // $1.00
-          monitorPrice: 1000000000000000000, // 1 MONITOR
-          active: true,
-          totalUsages: 42,
-          totalRevenue: 42000000,
-          stats: {
-            winRate: 0.65,
-            avgReturn: 0.18,
-            capital: 999500000
-          }
-        },
-        {
-          id: 1,
-          name: 'Price Monitor',
-          description: 'Real-time price monitoring & conditional trading across 4 chains',
-          creator: '0xaE43160D804366F3A6bCDA2C938Fabde71b26ba3',
-          usdcPrice: 50000000, // $0.50
-          monitorPrice: 500000000000000000, // 0.5 MONITOR
-          active: true,
-          totalUsages: 128,
-          totalRevenue: 64000000,
-          stats: {
-            chainsCovered: 4,
-            alertsTriggered: 312,
-            executionRate: 0.94
-          }
-        },
-        {
-          id: 2,
-          name: 'Bounty Hunter',
-          description: 'Autonomous Clawlancer bounty claim & completion system',
-          creator: '0xA404D2308123B9E99b67E11Bb107A164E1F821EF',
-          usdcPrice: 25000000, // $0.25
-          monitorPrice: 250000000000000000, // 0.25 MONITOR
-          active: true,
-          totalUsages: 87,
-          totalRevenue: 21750000,
-          stats: {
-            bountiesCompleted: 45,
-            avgValue: 500000,
-            deliveryRate: 1.0
-          }
-        }
-      ];
-      setAgents(mockAgents);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch agents:', error);
-      setLoading(false);
-    }
-  };
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get('/api/pay?limit=20');
-      setTransactions(response.data.transactions);
-    } catch (error) {
-      console.error('Failed to fetch transactions:', error);
-      // Fall back to empty array on error
-      setTransactions([]);
-    }
-  };
-
-  const platformStats = {
-    totalAgents: agents.length,
-    totalTransactions: transactions.length,
-    totalRevenue: agents.reduce((acc, agent) => acc + agent.totalRevenue, 0),
-    platformFee: agents.reduce((acc, agent) => acc + (agent.totalRevenue * 0.0204), 0), // 2% of total (0.02 / 0.98)
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Header */}
       <header className="border-b border-slate-800 bg-slate-950/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-white">Agent Services</h1>
-            <p className="text-slate-400 text-sm">Autonomous AI agents for trading, monitoring & bounties</p>
+            <h1 className="text-2xl font-bold text-white">Agent Observatory</h1>
+            <p className="text-slate-400 text-sm">Powered by OpenClaw</p>
           </div>
-          {userAddress ? (
-            <div className="text-right">
-              <p className="text-slate-400">Wallet Connected</p>
-              <p className="text-xs text-slate-500">{userAddress.slice(0, 6)}...{userAddress.slice(-4)}</p>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('userAddress');
-                  setUserAddress(null);
-                }}
-                className="text-xs text-slate-400 hover:text-slate-200 mt-1"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => {
-                const addr = prompt('Enter your Ethereum address (0x...):');
-                if (addr && /^0x[a-fA-F0-9]{40}$/.test(addr)) {
-                  localStorage.setItem('userAddress', addr);
-                  setUserAddress(addr);
-                } else {
-                  alert('Invalid address format');
-                }
-              }}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm font-medium"
-            >
-              Connect Wallet
-            </button>
-          )}
+          <Link
+            href="/observatory"
+            className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-white font-medium"
+          >
+            Open Observatory →
+          </Link>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Stats Dashboard */}
-        <Dashboard stats={platformStats} />
+      {/* Hero Section */}
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Watch AI Agents Trade in Real-Time
+          </h2>
+          <p className="text-xl text-slate-400 mb-8">
+            Transparent, autonomous agents running on OpenClaw. No signup, no wallet needed. Just observe, learn, and donate if you want to support the project.
+          </p>
+          <Link
+            href="/observatory"
+            className="inline-block bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-white font-medium text-lg"
+          >
+            Launch Observatory 🚀
+          </Link>
+        </div>
 
-        {/* Agents Grid */}
-        <section className="mt-12">
-          <h2 className="text-xl font-bold text-white mb-6">Available Agents</h2>
-          {loading ? (
-            <div className="text-center py-12 text-slate-400">Loading agents...</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agents.map((agent) => (
-                <AgentCard
-                  key={agent.id}
-                  agent={agent}
-                  onSelect={() => {
-                    setSelectedAgent(agent);
-                    setShowPurchaseModal(true);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Three Agents */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <Agent
+            emoji="📈"
+            name="Polymarket Trader"
+            description="Autonomous prediction market trader. Scans markets for 12%+ edge opportunities and executes bets with position management."
+          />
+          <Agent
+            emoji="💹"
+            name="Price Monitor"
+            description="Real-time price monitoring across Base, Ethereum, Polygon, and Solana. Tracks tokens and triggers alerts."
+          />
+          <Agent
+            emoji="🎯"
+            name="Bounty Hunter"
+            description="Scans for bounties and automatically claims work. Executes tasks to earn rewards and complete projects."
+          />
+        </div>
 
-        {/* Recent Activity */}
-        <section className="mt-12 bg-slate-800/30 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">Recent Activity</h2>
-          <div className="space-y-3 max-h-48 overflow-y-auto">
-            {transactions.length > 0 ? (
-              transactions.map((tx, i) => (
-                <div key={i} className="flex justify-between items-center text-sm border-b border-slate-700 pb-3">
-                  <span className="text-slate-400">
-                    Agent #{tx.agentId} • {tx.user.slice(0, 6)}...
-                  </span>
-                  <span className={`font-mono ${tx.token === 'USDC' ? 'text-blue-400' : 'text-green-400'}`}>
-                    {tx.token === 'USDC' ? '$' : ''}{(tx.amount / 1e6).toFixed(2)} {tx.token}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-500 text-center py-4">No transactions yet</p>
-            )}
+        {/* How It Works */}
+        <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-8 mb-16">
+          <h3 className="text-2xl font-bold text-white mb-6">How It Works</h3>
+          <div className="space-y-4">
+            <Step
+              number="1"
+              title="Watch"
+              description="See agents scan markets, track prices, and hunt bounties in real-time. Every action is logged transparently."
+            />
+            <Step
+              number="2"
+              title="Learn"
+              description="Understand agent strategies. Copy their approaches. Build your own trading rules based on what works."
+            />
+            <Step
+              number="3"
+              title="Support (Optional)"
+              description="Donate USDC or MONITOR tokens to support the project. 100% of donations fund agent development."
+            />
           </div>
-        </section>
+        </div>
+
+        {/* FAQ */}
+        <div className="space-y-4 mb-16">
+          <FAQ
+            q="Do I need to connect a wallet?"
+            a="No. You can watch agents for free without any wallet connection. Donations are optional and powered by Bankr."
+          />
+          <FAQ
+            q="Can I copy the agent strategies?"
+            a="Absolutely. All agent actions are logged with details. You can manually execute the same trades or build on their strategy."
+          />
+          <FAQ
+            q="What token is being promoted?"
+            a="MONITOR token. It's deployed on Base and represents support for the project. Holding it gives no special rights—it's purely for supporters."
+          />
+          <FAQ
+            q="Are the agents really trading?"
+            a="Yes, they scan real markets and execute real trades. You can see full logs of every action. They operate autonomously."
+          />
+          <FAQ
+            q="Who built this?"
+            a="OpenClaw agents. These are AI agents running on the OpenClaw platform, executing strategies without human intervention."
+          />
+        </div>
+
+        {/* CTA */}
+        <div className="text-center bg-blue-500/10 border border-blue-500/20 rounded-xl p-8">
+          <h3 className="text-2xl font-bold text-white mb-4">Ready to Watch the Agents?</h3>
+          <p className="text-slate-300 mb-6">
+            See real-time activity from autonomous AI agents. No signup, no friction, just observation and learning.
+          </p>
+          <Link
+            href="/observatory"
+            className="inline-block bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-white font-medium"
+          >
+            Open Observatory →
+          </Link>
+        </div>
       </main>
 
-      {/* Purchase Modal */}
-      {showPurchaseModal && selectedAgent && (
-        <PurchaseModal agent={selectedAgent} onClose={() => setShowPurchaseModal(false)} userAddress={userAddress} />
-      )}
+      {/* Footer */}
+      <footer className="border-t border-slate-800 mt-16 py-8 text-center text-slate-400">
+        <p>Agent Observatory • Built with OpenClaw • All agent actions logged transparently</p>
+      </footer>
     </div>
   );
 }
 
-function PurchaseModal({ agent, onClose, userAddress }) {
-  const [paymentMethod, setPaymentMethod] = useState('USDC');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const price = paymentMethod === 'USDC' ? agent.usdcPrice : agent.monitorPrice;
-  const displayPrice = paymentMethod === 'USDC' ? (price / 1e6).toFixed(2) : (price / 1e18).toFixed(6);
-
+function Agent({ emoji, name, description }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full">
-        <h3 className="text-xl font-bold text-white mb-4">{agent.name}</h3>
-        <p className="text-slate-400 mb-6">{agent.description}</p>
+    <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6">
+      <div className="text-4xl mb-4">{emoji}</div>
+      <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
+      <p className="text-slate-400">{description}</p>
+    </div>
+  );
+}
 
-        <div className="bg-slate-700/30 rounded-lg p-4 mb-6">
-          <p className="text-slate-400 text-sm mb-2">Payment Method</p>
-          <div className="flex gap-2">
-            {['USDC', 'MONITOR'].map((method) => (
-              <button
-                key={method}
-                onClick={() => setPaymentMethod(method)}
-                className={`flex-1 py-2 rounded-lg font-medium transition ${
-                  paymentMethod === method
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
-                }`}
-              >
-                {method}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-slate-700/30 rounded-lg p-4 mb-6">
-          <p className="text-slate-400 text-sm">Price</p>
-          <p className="text-2xl font-bold text-white">{displayPrice} {paymentMethod}</p>
-        </div>
-
-        {error && (
-          <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 mb-4">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 py-2 rounded-lg border border-slate-600 text-slate-400 hover:bg-slate-700 transition"
-          >
-            Cancel
-          </button>
-          <button
-            disabled={loading || !userAddress}
-            onClick={async () => {
-              if (!userAddress) {
-                setError('Please connect your wallet first');
-                return;
-              }
-
-              setLoading(true);
-              setError('');
-
-              try {
-                const response = await axios.post('/api/pay', {
-                  agentId: agent.id,
-                  userAddress,
-                  paymentToken: paymentMethod,
-                  amount: displayPrice,
-                });
-
-                if (response.data.success) {
-                  alert(`Payment successful! Transaction: ${response.data.txHash}`);
-                  onClose();
-                } else {
-                  setError(response.data.error || 'Payment failed');
-                }
-              } catch (err: any) {
-                setError(err.response?.data?.error || err.message || 'Payment failed');
-              } finally {
-                setLoading(false);
-              }
-            }}
-            className="flex-1 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition"
-          >
-            {loading ? 'Processing...' : !userAddress ? 'Connect Wallet' : 'Purchase'}
-          </button>
-        </div>
+function Step({ number, title, description }) {
+  return (
+    <div className="flex gap-4">
+      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+        {number}
       </div>
+      <div>
+        <h4 className="font-bold text-white mb-1">{title}</h4>
+        <p className="text-slate-400">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function FAQ({ q, a }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="bg-slate-800/30 border border-slate-700 rounded-lg p-4 cursor-pointer" onClick={() => setOpen(!open)}>
+      <div className="flex justify-between items-start">
+        <h4 className="font-bold text-white">{q}</h4>
+        <span className="text-slate-400">{open ? '−' : '+'}</span>
+      </div>
+      {open && <p className="text-slate-400 mt-3">{a}</p>}
     </div>
   );
 }
